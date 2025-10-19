@@ -20,14 +20,14 @@ export function Dashboard() {
         setLoading(true);
         await fetchLectures();
       } catch (err) {
-        showError('Failed to load lectures');
+        // Silently handle loading errors without showing notification
       } finally {
         setLoading(false);
       }
     };
 
     loadLectures();
-  }, [fetchLectures, showError]);
+  }, [fetchLectures]);
 
   const handleDelete = async (lectureId) => {
     if (!window.confirm('Are you sure you want to delete this lecture?')) {
