@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import multer from "multer";
 import { PDFParse } from "pdf-parse";
+import multer from "multer";
+import { PDFParse } from "pdf-parse";
 import { enhanceContent, checkConfiguration } from "./services/aiEnhancer.js";
 import { generateVisuals, checkVisualConfiguration } from "./services/visualGenerator.js";
 import { generateQuestions, generateQuestionsForSections } from "./services/questionGenerator.js";
@@ -28,9 +30,6 @@ const upload = multer({
     }
   }
 });
-
-// In-memory storage for lecture status (in production, use a database)
-const lectureStore = new Map();
 
 // Health check endpoint
 app.get("/", (req, res) => {
@@ -81,6 +80,133 @@ app.post("/api/lectures/text", async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to process text content",
+      details: error.message
+    });
+  }
+});
+
+// In-memory storage for lecture status (in production, use a database)
+const lectureStore = new Map();
+
+// Feature 1: Upload/Paste Content - File Upload (PDF or TXT)
+app.post("/api/lectures/upload", upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: "No file provided"
+      });
+    }
+
+    let content = '';
+    const fileName = req.file.originalname;
+    const fileType = req.file.mimetype;
+
+    // Handle PDF files
+    if (fileType === 'application/pdf') {
+      try {
+        const parser = new PDFParse({ data: req.file.buffer });
+        const pdfData = await parser.getText();
+        content = pdfData.text;
+      } catch (pdfError) {
+        console.error("PDF parsing error:", pdfError);
+        return res.status(400).json({
+          success: false,
+          error: "Failed to parse PDF file",
+          details: pdfError.message
+        });
+      }
+    }
+    // Handle TXT files
+    else if (fileType === 'text/plain') {
+      content = req.file.buffer.toString('utf-8');
+    }
+    else {
+      return res.status(400).json({
+        success: false,
+        error: `Unsupported file type: ${fileType}`
+      });
+    }
+
+    // Validate content
+    if (!content || content.trim().length < 10) {
+      return res.status(400).json({
+        success: false,
+        error: "File content must be at least 10 characters long"
+      });
+    }
+
+    // Parse topics from content
+    const topics = parseTopics(content);
+
+    // Generate a unique lecture ID
+    const lectureId = `lecture_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Store lecture data
+    lectureStore.set(lectureId, {
+      id: lectureId,
+      title: fileName.replace(/\.[^/.]+$/, ''),
+      fileName: fileName,
+      fileType: fileType,
+      content: content,
+      contentLength: content.length,
+      topics: topics,
+      status: 'completed',
+      progress: 100,
+      createdAt: new Date().toISOString()
+    });
+
+    res.json({
+      success: true,
+      message: "File uploaded and processed successfully",
+      data: {
+        id: lectureId,
+        title: fileName.replace(/\.[^/.]+$/, ''), // Remove file extension
+        fileName: fileName,
+        fileType: fileType,
+        contentLength: content.length,
+        topics: topics,
+        summary: {
+          totalTopics: topics.length,
+          totalSubtopics: topics.reduce((sum, t) => sum + (t.subtopics?.length || 0), 0)
+        }
+      }
+    });
+  } catch (error) {
+    console.error("File upload error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to process file upload",
+      details: error.message
+    });
+  }
+});
+
+// Get lecture status endpoint
+app.get("/api/lectures/:lectureId/status", (req, res) => {
+  try {
+    const { lectureId } = req.params;
+
+    const lecture = lectureStore.get(lectureId);
+
+    if (!lecture) {
+      return res.status(404).json({
+        success: false,
+        error: "Lecture not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      status: lecture.status,
+      progress: lecture.progress,
+      data: lecture
+    });
+  } catch (error) {
+    console.error("Error getting lecture status:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to get lecture status",
       details: error.message
     });
   }
@@ -336,7 +462,29 @@ function extractKeywords(text) {
   return words.filter(word => word.length > 3 && !stopWords.has(word)).slice(0, 5);
 }
 
-// Error handling middleware
+// Multer error handling middleware
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'FILE_TOO_LARGE') {
+      return res.status(400).json({
+        success: false,
+        error: "File is too large. Maximum size is 50MB"
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      error: `File upload error: ${err.message}`
+    });
+  } else if (err) {
+    return res.status(400).json({
+      success: false,
+      error: err.message
+    });
+  }
+  next();
+});
+
+// General error handling middleware
 app.use((err, req, res, next) => {
   console.error("Error:", err);
   res.status(500).json({
