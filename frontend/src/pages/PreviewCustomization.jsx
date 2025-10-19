@@ -76,6 +76,7 @@ export function PreviewCustomization() {
       setSaving(true);
       await updateLectureSelections(lectureId, selections);
       success('Selections saved successfully!');
+      // Navigate to the lecture viewer page
       navigate(`/lecture/${lectureId}`);
     } catch (err) {
       showError('Failed to save selections');

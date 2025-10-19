@@ -21,13 +21,15 @@ export function useLectures() {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      
-      const data = await post('/api/lectures/upload', formData, {
+
+      const response = await post('/api/lectures/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      
-      addLecture(data);
-      return data;
+
+      // Extract the lecture data from the response
+      const lectureData = response.data || response;
+      addLecture(lectureData);
+      return lectureData;
     } catch (error) {
       console.error('Failed to upload lecture:', error);
       throw error;
@@ -46,9 +48,12 @@ export function useLectures() {
 
   const getLecture = useCallback(async (lectureId) => {
     try {
-      const data = await get(`/api/lectures/${lectureId}`);
-      setCurrentLecture(data);
-      return data;
+      const response = await get(`/api/lectures/${lectureId}`);
+
+      // Extract lecture data from response
+      const lectureData = response.data || response;
+      setCurrentLecture(lectureData);
+      return lectureData;
     } catch (error) {
       console.error('Failed to get lecture:', error);
       throw error;

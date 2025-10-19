@@ -24,15 +24,20 @@ export function Processing() {
 
     const pollStatus = async () => {
       try {
-        const data = await getLectureStatus(lectureId);
-        setStatus(data.status);
-        setProgress(data.progress || 0);
+        const response = await getLectureStatus(lectureId);
 
-        if (data.status === LECTURE_STATUS.COMPLETED) {
+        // Handle the response structure from backend
+        const lectureStatus = response.status || response.data?.status || 'completed';
+        const lectureProgress = response.progress || response.data?.progress || 100;
+
+        setStatus(lectureStatus);
+        setProgress(lectureProgress);
+
+        if (lectureStatus === LECTURE_STATUS.COMPLETED || lectureStatus === 'completed') {
           // Redirect to preview customization after a short delay
           setTimeout(() => navigate(`/preview/${lectureId}`), 1500);
-        } else if (data.status === LECTURE_STATUS.FAILED) {
-          setError(data.error || 'Processing failed');
+        } else if (lectureStatus === LECTURE_STATUS.FAILED || lectureStatus === 'failed') {
+          setError(response.error || response.data?.error || 'Processing failed');
         }
       } catch (err) {
         setError(err.message || 'Failed to get status');

@@ -3,8 +3,6 @@ import cors from "cors";
 import dotenv from "dotenv";
 import multer from "multer";
 import { PDFParse } from "pdf-parse";
-import multer from "multer";
-import { PDFParse } from "pdf-parse";
 import { enhanceContent, checkConfiguration } from "./services/aiEnhancer.js";
 import { generateVisuals, checkVisualConfiguration } from "./services/visualGenerator.js";
 import { generateQuestions, generateQuestionsForSections } from "./services/questionGenerator.js";
@@ -142,8 +140,8 @@ app.post("/api/lectures/upload", upload.single('file'), async (req, res) => {
     // Generate a unique lecture ID
     const lectureId = `lecture_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Store lecture data
-    lectureStore.set(lectureId, {
+    // Store lecture data with initial status
+    const lectureData = {
       id: lectureId,
       title: fileName.replace(/\.[^/.]+$/, ''),
       fileName: fileName,
@@ -151,14 +149,83 @@ app.post("/api/lectures/upload", upload.single('file'), async (req, res) => {
       content: content,
       contentLength: content.length,
       topics: topics,
-      status: 'completed',
-      progress: 100,
-      createdAt: new Date().toISOString()
-    });
+      status: 'processing',
+      progress: 10,
+      createdAt: new Date().toISOString(),
+      slides: []
+    };
+
+    lectureStore.set(lectureId, lectureData);
+
+    // Generate slides asynchronously in the background
+    (async () => {
+      try {
+        const slides = [];
+        let progress = 20;
+
+        for (let i = 0; i < topics.length; i++) {
+          const topic = topics[i];
+          const topicContent = `${topic.title}\n${topic.description || ''}`;
+
+          // Enhance topic content with AI
+          const enhancedResult = await enhanceContent(topicContent, { topic: topic.title });
+          const enhancedContent = enhancedResult.success ? enhancedResult.data : { summary: topic.description };
+          progress += 20 / topics.length;
+
+          // Generate questions for this topic
+          const questionsResult = await generateQuestions(topicContent, { topic: topic.title });
+          const questions = questionsResult.success ? questionsResult.data : [];
+          progress += 20 / topics.length;
+
+          // Generate visuals for this topic
+          const visualsResult = await generateVisuals([topic.title]);
+          const visualsData = visualsResult.success ? visualsResult.data : { visuals: [] };
+          const visuals = visualsData.visuals && visualsData.visuals.length > 0 ? visualsData.visuals[0].images : [];
+          progress += 20 / topics.length;
+
+          slides.push({
+            id: `slide_${i}`,
+            title: topic.title,
+            description: topic.description || '',
+            enhancedContent: enhancedContent,
+            questions: questions,
+            visuals: visuals,
+            subtopics: topic.subtopics || [],
+            selectedImage: visuals.length > 0 ? visuals[0] : null,
+            selectedFlowchart: null
+          });
+
+          // Update progress
+          const updatedLecture = lectureStore.get(lectureId);
+          if (updatedLecture) {
+            updatedLecture.progress = Math.min(90, Math.round(progress));
+            updatedLecture.slides = slides;
+            lectureStore.set(lectureId, updatedLecture);
+          }
+        }
+
+        // Mark as completed
+        const finalLecture = lectureStore.get(lectureId);
+        if (finalLecture) {
+          finalLecture.status = 'completed';
+          finalLecture.progress = 100;
+          finalLecture.slides = slides;
+          lectureStore.set(lectureId, finalLecture);
+        }
+      } catch (error) {
+        console.error("Error generating slides:", error);
+        const failedLecture = lectureStore.get(lectureId);
+        if (failedLecture) {
+          failedLecture.status = 'failed';
+          failedLecture.error = error.message;
+          lectureStore.set(lectureId, failedLecture);
+        }
+      }
+    })();
 
     res.json({
       success: true,
-      message: "File uploaded and processed successfully",
+      message: "File uploaded and processing started",
       data: {
         id: lectureId,
         title: fileName.replace(/\.[^/.]+$/, ''), // Remove file extension
@@ -207,6 +274,97 @@ app.get("/api/lectures/:lectureId/status", (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to get lecture status",
+      details: error.message
+    });
+  }
+});
+
+// Get lecture data endpoint
+app.get("/api/lectures/:lectureId", (req, res) => {
+  try {
+    const { lectureId } = req.params;
+
+    const lecture = lectureStore.get(lectureId);
+
+    if (!lecture) {
+      return res.status(404).json({
+        success: false,
+        error: "Lecture not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      data: lecture
+    });
+  } catch (error) {
+    console.error("Error getting lecture:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to get lecture",
+      details: error.message
+    });
+  }
+});
+
+// Generate slides with AI enhancements
+app.post("/api/lectures/:lectureId/generate-slides", async (req, res) => {
+  try {
+    const { lectureId } = req.params;
+    const lecture = lectureStore.get(lectureId);
+
+    if (!lecture) {
+      return res.status(404).json({
+        success: false,
+        error: "Lecture not found"
+      });
+    }
+
+    // Generate slides from topics
+    const slides = [];
+
+    for (const topic of lecture.topics) {
+      // Enhance topic content with AI
+      const enhancedContent = await enhanceContent(topic.title, topic.description || '');
+
+      // Generate questions for this topic
+      const questions = await generateQuestions(topic.title, topic.description || '');
+
+      // Generate visuals for this topic
+      const visuals = await generateVisuals(topic.title);
+
+      slides.push({
+        id: `slide_${slides.length}`,
+        title: topic.title,
+        description: topic.description || '',
+        enhancedContent: enhancedContent,
+        questions: questions,
+        visuals: visuals,
+        subtopics: topic.subtopics || [],
+        selectedImage: visuals.length > 0 ? visuals[0] : null,
+        selectedFlowchart: null
+      });
+    }
+
+    // Update lecture with slides
+    lecture.slides = slides;
+    lecture.status = 'completed';
+    lectureStore.set(lectureId, lecture);
+
+    res.json({
+      success: true,
+      data: {
+        id: lectureId,
+        title: lecture.title,
+        slides: slides,
+        totalSlides: slides.length
+      }
+    });
+  } catch (error) {
+    console.error("Error generating slides:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to generate slides",
       details: error.message
     });
   }

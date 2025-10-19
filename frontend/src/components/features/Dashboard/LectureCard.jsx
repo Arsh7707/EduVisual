@@ -44,14 +44,14 @@ export function LectureCard({ lecture, onDelete, onExport }) {
           <p>
             <span className="font-medium">Uploaded:</span> {formatDate(lecture.createdAt)}
           </p>
-          {lecture.visuals && (
+          {lecture.slides && (
             <p>
-              <span className="font-medium">Visuals:</span> {lecture.visuals.length}
+              <span className="font-medium">Slides:</span> {lecture.slides.length}
             </p>
           )}
-          {lecture.questions && (
+          {lecture.topics && (
             <p>
-              <span className="font-medium">Questions:</span> {lecture.questions.length}
+              <span className="font-medium">Topics:</span> {lecture.topics.length}
             </p>
           )}
         </div>

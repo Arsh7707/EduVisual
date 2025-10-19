@@ -22,11 +22,29 @@ export async function generateVisuals(topics) {
 
     for (const topic of topics) {
       try {
-        const images = await searchUnsplashImages(topic, 3);
+        // Generate multiple search queries for better results
+        const searchQueries = generateSearchQueries(topic);
+        let allImages = [];
+
+        // Try multiple search queries to get diverse, high-quality images
+        for (const query of searchQueries) {
+          try {
+            const images = await searchUnsplashImages(query, 3);
+            allImages = allImages.concat(images);
+          } catch (error) {
+            console.warn(`Failed to fetch images for query "${query}":`, error.message);
+          }
+        }
+
+        // Remove duplicates and limit to 6 images
+        const uniqueImages = Array.from(
+          new Map(allImages.map(img => [img.id, img])).values()
+        ).slice(0, 6);
+
         visuals.push({
           topic: topic,
-          images: images,
-          source: 'unsplash'
+          images: uniqueImages.length > 0 ? uniqueImages : generateMockImagesForTopic(topic),
+          source: uniqueImages.length > 0 ? 'unsplash' : 'mock'
         });
       } catch (error) {
         console.warn(`Failed to fetch images for topic "${topic}":`, error.message);
@@ -58,6 +76,24 @@ export async function generateVisuals(topics) {
       }
     };
   }
+}
+
+/**
+ * Generate multiple search queries for a topic to find diverse images
+ * @param {string} topic - The topic to generate queries for
+ * @returns {Array<string>} - Array of search queries
+ */
+function generateSearchQueries(topic) {
+  const queries = [
+    topic, // Original topic
+    `${topic} education`, // Educational context
+    `${topic} learning`, // Learning context
+    `${topic} infographic`, // Infographic style
+    `${topic} diagram`, // Diagram style
+    `${topic} concept`, // Conceptual
+  ];
+
+  return queries;
 }
 
 /**
