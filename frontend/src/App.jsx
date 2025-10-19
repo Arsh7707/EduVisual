@@ -8,6 +8,7 @@ import { Landing } from './pages/Landing';
 import { Upload } from './pages/Upload';
 import { Processing } from './pages/Processing';
 import { Dashboard } from './pages/Dashboard';
+import { PreviewCustomization } from './pages/PreviewCustomization';
 import { LectureViewer } from './pages/LectureViewer';
 import { Settings } from './pages/Settings';
 import { About } from './pages/About';
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/" element={<Landing />} />
                 <Route path="/upload" element={<Upload />} />
                 <Route path="/processing/:lectureId" element={<Processing />} />
+                <Route path="/preview/:lectureId" element={<PreviewCustomization />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/lecture/:lectureId" element={<LectureViewer />} />
                 <Route path="/settings" element={<Settings />} />

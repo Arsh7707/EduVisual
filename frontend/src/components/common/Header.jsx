@@ -15,15 +15,15 @@ export function Header() {
   return (
     <header className="bg-white dark:bg-gray-800 shadow-md dark:shadow-gray-900 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="relative flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl text-blue-600 dark:text-blue-400">
+          <Link to="/" className="flex items-center gap-2 font-bold text-xl text-blue-600 dark:text-blue-400 z-10">
             <BookOpen size={28} />
             <span>EduVisual</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation - Centered */}
+          <nav className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 items-center gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -36,7 +36,7 @@ export function Header() {
           </nav>
 
           {/* Settings Button */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4 z-10">
             <Link
               to="/settings"
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
