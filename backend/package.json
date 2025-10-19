@@ -16,7 +16,9 @@
     "dotenv": "^17.2.3",
     "express": "^4.18.2",
     "html2pdf.js": "^0.12.1",
+    "multer": "^2.0.2",
     "openai": "^6.5.0",
+    "pdf-parse": "^2.4.3",
     "pptxgenjs": "^4.0.1",
     "unsplash-js": "^7.0.20"
   }
