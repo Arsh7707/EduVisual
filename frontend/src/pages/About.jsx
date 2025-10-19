@@ -68,9 +68,11 @@ export function About() {
               const Icon = feature.icon;
               return (
                 <Card key={index}>
-                  <CardBody className="pt-4">
-                    <Icon className="mb-4 text-blue-600 dark:text-blue-400" size={32} />
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                  <CardBody className="pt-4 text-center">
+                    <div className="flex justify-center mb-4">
+                      <Icon className="text-blue-600 dark:text-blue-400" size={32} />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">
                       {feature.title}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 text-sm">
@@ -84,65 +86,66 @@ export function About() {
         </div>
 
         {/* How It Works Section */}
-        <Card className="mb-12">
-          <CardBody className="py-12">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-8 text-center">How It Works</h2>
-            <div className="space-y-6 max-w-2xl mx-auto">
-              <div className="flex gap-4">
-                <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-600 dark:bg-blue-700 text-white font-bold">
-                    1
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-8 text-center">How It Works</h2>
+          <Card>
+            <CardBody className="py-8">
+              <div className="flex flex-col lg:flex-row gap-6 lg:gap-4 overflow-x-auto">
+                {/* Step 1 */}
+                <div className="flex-1 min-w-full lg:min-w-0 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 dark:bg-blue-700 text-white font-bold text-lg">
+                      1
+                    </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  <h3 className="font-bold text-gray-900 dark:text-gray-100">Upload Your Lecture</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-3">Upload Your Lecture</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Simply upload your lecture materials in PDF or TXT format
                   </p>
                 </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-600 dark:bg-blue-700 text-white font-bold">
-                    2
+
+                {/* Step 2 */}
+                <div className="flex-1 min-w-full lg:min-w-0 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 dark:bg-blue-700 text-white font-bold text-lg">
+                      2
+                    </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  <h3 className="font-bold text-gray-900 dark:text-gray-100">AI Processing</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-3">AI Processing</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Our AI analyzes your content and generates visuals and questions
                   </p>
                 </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-600 dark:bg-blue-700 text-white font-bold">
-                    3
+
+                {/* Step 3 */}
+                <div className="flex-1 min-w-full lg:min-w-0 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 dark:bg-blue-700 text-white font-bold text-lg">
+                      3
+                    </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  <h3 className="font-bold text-gray-900 dark:text-gray-100">Review & Customize</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-3">Review & Customize</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Review the generated content and make any adjustments you need
                   </p>
                 </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex-shrink-0">
-                  <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-600 dark:bg-blue-700 text-white font-bold">
-                    4
+
+                {/* Step 4 */}
+                <div className="flex-1 min-w-full lg:min-w-0 text-center">
+                  <div className="flex justify-center mb-4">
+                    <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 dark:bg-blue-700 text-white font-bold text-lg">
+                      4
+                    </div>
                   </div>
-                </div>
-                <div className="text-center">
-                  <h3 className="font-bold text-gray-900 dark:text-gray-100">Export & Share</h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <h3 className="font-bold text-gray-900 dark:text-gray-100 mb-3">Export & Share</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
                     Export to PowerPoint, PDF, or HTML and share with your students
                   </p>
                 </div>
               </div>
-            </div>
-          </CardBody>
-        </Card>
+            </CardBody>
+          </Card>
+        </div>
 
         {/* Contact Section */}
         <Card>
