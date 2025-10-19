@@ -29,8 +29,8 @@ export function Processing() {
         setProgress(data.progress || 0);
 
         if (data.status === LECTURE_STATUS.COMPLETED) {
-          // Redirect to lecture viewer after a short delay
-          setTimeout(() => navigate(`/lecture/${lectureId}`), 1500);
+          // Redirect to preview customization after a short delay
+          setTimeout(() => navigate(`/preview/${lectureId}`), 1500);
         } else if (data.status === LECTURE_STATUS.FAILED) {
           setError(data.error || 'Processing failed');
         }

@@ -75,6 +75,17 @@ export function useLectures() {
     }
   }, [del, deleteLecture]);
 
+  const updateLectureSelections = useCallback(async (lectureId, selections) => {
+    try {
+      const data = await post(`/api/lectures/${lectureId}/selections`, { selections });
+      updateLecture(lectureId, data);
+      return data;
+    } catch (error) {
+      console.error('Failed to update lecture selections:', error);
+      throw error;
+    }
+  }, [post, updateLecture]);
+
   return {
     lectures,
     fetchLectures,
@@ -83,6 +94,7 @@ export function useLectures() {
     getLecture,
     exportLecture,
     removeLecture,
+    updateLectureSelections,
   };
 }
 
