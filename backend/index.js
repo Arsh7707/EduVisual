@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import multer from "multer";
+import { PDFParse } from "pdf-parse";
 import { enhanceContent, checkConfiguration } from "./services/aiEnhancer.js";
 import { generateVisuals, checkVisualConfiguration } from "./services/visualGenerator.js";
 import { generateQuestions, generateQuestionsForSections } from "./services/questionGenerator.js";
@@ -12,6 +14,23 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = ['application/pdf', 'text/plain'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Invalid file type. Only PDF and TXT files are allowed. Received: ${file.mimetype}`));
+    }
+  }
+});
+
+// In-memory storage for lecture status (in production, use a database)
+const lectureStore = new Map();
 
 // Health check endpoint
 app.get("/", (req, res) => {
