@@ -74,7 +74,7 @@ export function Processing() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
                 <button
                   onClick={() => navigate('/upload')}
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
                 >
                   Try uploading another file
                 </button>

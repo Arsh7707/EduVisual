@@ -10,7 +10,7 @@ export function VisualGallery({ visuals = [] }) {
     return (
       <Card>
         <CardBody className="text-center py-12">
-          <p className="text-gray-500">No visuals generated yet</p>
+          <p className="text-gray-500 dark:text-gray-400">No visuals generated yet</p>
         </CardBody>
       </Card>
     );
@@ -35,7 +35,7 @@ export function VisualGallery({ visuals = [] }) {
             className="cursor-pointer overflow-hidden"
             onClick={() => setSelectedIndex(index)}
           >
-            <div className="aspect-video bg-gray-200 overflow-hidden">
+            <div className="aspect-video bg-gray-200 dark:bg-gray-700 overflow-hidden">
               {visual.url ? (
                 <img
                   src={visual.url}
@@ -43,14 +43,14 @@ export function VisualGallery({ visuals = [] }) {
                   className="w-full h-full object-cover hover:scale-105 transition-transform"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-300">
-                  <span className="text-gray-600">No image</span>
+                <div className="w-full h-full flex items-center justify-center bg-gray-300 dark:bg-gray-600">
+                  <span className="text-gray-600 dark:text-gray-400">No image</span>
                 </div>
               )}
             </div>
             <CardBody>
-              <h3 className="font-semibold text-gray-900 truncate">{visual.title}</h3>
-              <p className="text-sm text-gray-600 line-clamp-2">{visual.description}</p>
+              <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">{visual.title}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{visual.description}</p>
             </CardBody>
           </Card>
         ))}
@@ -71,21 +71,21 @@ export function VisualGallery({ visuals = [] }) {
               className="w-full rounded-lg"
             />
           )}
-          <p className="text-gray-700">{currentVisual?.description}</p>
+          <p className="text-gray-700 dark:text-gray-300">{currentVisual?.description}</p>
           <div className="flex justify-between items-center">
             <button
               onClick={handlePrevious}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 rounded-lg transition-colors"
             >
               <ChevronLeft size={20} />
               Previous
             </button>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {selectedIndex + 1} / {visuals.length}
             </span>
             <button
               onClick={handleNext}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 rounded-lg transition-colors"
             >
               Next
               <ChevronRight size={20} />

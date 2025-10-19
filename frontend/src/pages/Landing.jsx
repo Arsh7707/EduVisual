@@ -59,13 +59,13 @@ export function Landing() {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card key={index} className="text-center border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
+                <Card key={index} className="text-center border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg transition-shadow">
                   <CardBody className="pt-8">
-                    <Icon className="mx-auto mb-4 text-blue-600" size={48} />
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    <Icon className="mx-auto mb-4 text-blue-600 dark:text-blue-400" size={48} />
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                       {feature.title}
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                       {feature.description}
                     </p>
                   </CardBody>

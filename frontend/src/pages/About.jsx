@@ -69,11 +69,11 @@ export function About() {
               return (
                 <Card key={index}>
                   <CardBody className="pt-4">
-                    <Icon className="mb-4 text-blue-600" size={32} />
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">
+                    <Icon className="mb-4 text-blue-600 dark:text-blue-400" size={32} />
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
                       {feature.title}
                     </h3>
-                    <p className="text-gray-600 text-sm">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
                       {feature.description}
                     </p>
                   </CardBody>

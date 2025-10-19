@@ -54,7 +54,7 @@ export function Upload() {
 
         <Card>
           <CardHeader>
-            <h2 className="text-xl font-bold text-gray-900">Select Your File</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Select Your File</h2>
           </CardHeader>
           <CardBody className="space-y-6">
             <FileUploadZone onFileSelect={handleFileSelect} disabled={isUploading} />

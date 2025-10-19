@@ -10,7 +10,6 @@ export function Settings() {
   const [settings, setSettings] = useState({
     apiKey: localStorage.getItem('apiKey') || '',
     theme: theme,
-    notifications: localStorage.getItem('notifications') !== 'false',
   });
 
   const handleChange = (e) => {
@@ -23,7 +22,6 @@ export function Settings() {
 
   const handleSave = () => {
     localStorage.setItem('apiKey', settings.apiKey);
-    localStorage.setItem('notifications', settings.notifications);
     toggleTheme(settings.theme);
     success('Settings saved successfully');
   };
@@ -78,20 +76,6 @@ export function Settings() {
                 <option value="dark">Dark</option>
                 <option value="auto">Auto</option>
               </select>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="notifications"
-                name="notifications"
-                checked={settings.notifications}
-                onChange={handleChange}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-              />
-              <label htmlFor="notifications" className="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                Enable notifications
-              </label>
             </div>
           </CardBody>
         </Card>
